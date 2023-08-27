@@ -1,0 +1,41 @@
+﻿@using System.Security.Claims
+@model IEnumerable<Shared.DTO.GetAuctionDTO>
+
+@{
+    var userBalance = ViewContext.HttpContext.User.FindFirstValue("WalletBalance");
+}
+<button asp-action="Create">Create Auction</button>
+
+<label>@userBalance   empty</label>
+
+
+<table class="table table-sm table-dark">
+    <thead>
+    <tr>
+        <th>
+            Title
+        </th>
+        <th>
+            Seller
+        </th>
+        <th>
+            Top Bid
+        </th>
+        <th>
+            Time Remaining
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+        @foreach(var auction in Model)
+        {
+            <tr>
+                <td> @auction.Title</td>
+                <td>  @auction.UserId</td>
+                <td>  @auction.MaxBid</td>
+                <td>  @auction.EndTime</td>
+            </tr>
+        }
+    </tbody>
+
+</table>
