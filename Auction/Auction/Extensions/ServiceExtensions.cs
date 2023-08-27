@@ -81,24 +81,17 @@ public static class ServiceExtensions
 
 
     public static void AddAuthenticationCookie(this IServiceCollection services) =>
-        services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddCookie(options =>
+        services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "MyCookieAuthenticationScheme";
+                options.DefaultSignInScheme = "MyCookieAuthenticationScheme";
+                options.DefaultChallengeScheme = "MyCookieAuthenticationScheme";
+            })
+            .AddCookie("MyCookieAuthenticationScheme", options =>
             {
                 options.LoginPath = new PathString("/Authentication/Login");
-                options.AccessDeniedPath = new PathString("/Authentication/Login");
-                options.LogoutPath = new PathString("/Authentication/Logout");
-                options.SlidingExpiration = true;
-                options.Cookie.Path = "/";
+                options.ExpireTimeSpan = TimeSpan.FromHours(2);
             });
-
-    //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    //    .AddCookie(options =>
-    //    {
-    //        options.LoginPath = new PathString("/../Views/Authentication/Login");
-    //        options.ExpireTimeSpan = TimeSpan.FromHours(2);
-    //    });
-
-
     public static void ConfigureSignalR(this IServiceCollection services) =>
         services.AddSignalR().AddJsonProtocol(options =>
         {

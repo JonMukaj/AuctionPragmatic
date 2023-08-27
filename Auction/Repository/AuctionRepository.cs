@@ -21,5 +21,5 @@ public class AuctionRepository:RepositoryBase<Auction>,IAuctionRepository
     public async Task<IEnumerable<Auction>> GetAllAuctionsForUserId(int userId)=>await FindByCondition(e=>e.UserId.Equals(userId)).ToListAsync();
 
     public async Task<IEnumerable<Auction>> GetAllActiveAuctions() =>
-        await FindByCondition(e => e.IsEnded.Equals(false)).OrderByDescending(x => x.EndTime).ToListAsync();
+        await FindByCondition(e => e.IsEnded.Equals(false)).OrderBy(x => x.EndTime).ToListAsync();
 }

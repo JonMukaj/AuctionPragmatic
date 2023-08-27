@@ -9,9 +9,11 @@ public class GetAuctionDTO
     public string? Description { get; set; }
     public DateTime? StartTime { get; set; }
     public int UserId { get; set; }
+    public string Username { get; set; }
     public DateTime EndTime { get; set; }
     public decimal StartingBid { get; set; }
     public decimal CurrentBid { get; set; }
     public decimal? MaxBid { get; set; }
     public bool IsEnded { get; set; }
+    public string RemainingTime { get; set; }
 }

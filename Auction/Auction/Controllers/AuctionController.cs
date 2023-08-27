@@ -22,7 +22,7 @@ namespace Auction.Controllers
         {
             if (HttpContext.User.Identity.IsAuthenticated)
             {
-                var userBalance = HttpContext.User.FindFirstValue("WalletBalance");
+                var userBalance = HttpContext.User.FindFirstValue("Id");
                 var test = HttpContext.User.Claims;
             }
             var result = await _serviceManger.AuctionService.GetAllAuctions();
@@ -35,11 +35,12 @@ namespace Auction.Controllers
         //    var result = await _serviceManger.AuctionService.CreateAuction(request);
             return View();
         }
-
+            
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] CreateAuctionDTO request)
         {
-            var result = await _serviceManger.AuctionService.CreateAuction(request);
+            var userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var result = await _serviceManger.AuctionService.CreateAuction(request,userId);
             return RedirectToAction("List");
         }
 

@@ -8,7 +8,7 @@ using Shared.DTO;
 
 namespace Service;
 
-public class AuctionService:IAuctionService
+public class AuctionService : IAuctionService
 {
     private readonly ILoggerManager _logger;
     private readonly IMapper _mapper;
@@ -22,15 +22,16 @@ public class AuctionService:IAuctionService
     }
 
 
-    public async Task<bool> CreateAuction(CreateAuctionDTO request)
+    public async Task<bool> CreateAuction(CreateAuctionDTO request, int loggedUser)
     {
         var auction = _mapper.Map<Auction>(request);
         auction.DateCreated = DateTime.Now;
 
-        var user = await _repositoryManager.UserRepository.GetRecordById(request.UserId);
-        if (user is null) throw new NotFoundException($"No user was found with id {request.UserId}");
+        var user = await _repositoryManager.UserRepository.GetRecordById(loggedUser);
+        if (user is null) throw new NotFoundException($"No user was found with id {loggedUser}");
 
-        auction.UserId = request.UserId;
+        auction.UserId = loggedUser;
+        auction.MaxBid = auction.StartingBid;
 
         _repositoryManager.AuctionRepository.CreateRecord(auction);
         await _repositoryManager.SaveAsync();
@@ -53,6 +54,46 @@ public class AuctionService:IAuctionService
         if (list is null)
             throw new NotFoundException("No list with auction were found!");
 
-        return _mapper.Map<IEnumerable<GetAuctionDTO>>(list);
+        var mapped = new List<GetAuctionDTO>();
+
+        foreach (var i in list)
+        {
+            var user = await _repositoryManager.UserRepository.GetRecordById(i.UserId);
+
+            var auction = _mapper.Map<GetAuctionDTO>(i);
+            auction.Username = string.Concat(user.FirstName + " " + user.LastName);
+
+           auction.RemainingTime = await GetRemainingTime(i.EndTime);
+         
+
+            mapped.Add(auction);
+        }
+
+        return mapped;
     }
+
+
+    #region private
+
+    private async Task<string> GetRemainingTime(DateTime endTime)
+    {
+        var remaining = endTime.Subtract(DateTime.Now);
+
+        if (remaining.Days >= 1)
+        {
+            return await Task.FromResult( string.Concat(remaining.Days.ToString("D")," Days"));
+        }
+        else if (remaining.Hours >= 1 && remaining.Days < 1)
+        {
+            return await Task.FromResult(string.Concat(remaining.Hours.ToString("D"), " Hours"));
+        }
+        else
+        {
+            return await Task.FromResult(string.Concat(remaining.Minutes.ToString("D"), " Minutes"));
+        }
+        // return await  Task.FromResult(remaining.ToString("g"));
+    }
+
+    #endregion
+
 }

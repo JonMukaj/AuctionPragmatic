@@ -30,13 +30,13 @@ public class AuthenticationController : Controller
 
         if (claims is not null)
         {
-            var properties = new AuthenticationProperties()
+            await HttpContext.SignInAsync("MyCookieAuthenticationScheme", new ClaimsPrincipal(claims));
+
+            if (HttpContext.User.Identity.IsAuthenticated)
             {
-                AllowRefresh = true,
-                IsPersistent = true,
-                RedirectUri = "/Authentication/Login"
-            };
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claims),properties);
+                var userBalance = HttpContext.User.FindFirstValue("Id");
+                var test = HttpContext.User.Claims;
+            }
             return RedirectToAction("Index", "Home");
 
         }
@@ -63,7 +63,7 @@ public class AuthenticationController : Controller
 
     public async Task<IActionResult> Logout()
     {
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        await HttpContext.SignOutAsync("MyCookieAuthenticationScheme");
         Response.Cookies.Delete(".AspNetCore.Cookies");
         Response.Cookies.Delete(".AspNetCore.Identity.Application");
         Response.Cookies.Delete(".AspNetCore.Antiforgery.6AuIRqB3-IU");

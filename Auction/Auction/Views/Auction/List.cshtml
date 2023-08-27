@@ -4,9 +4,9 @@
 @{
     var userBalance = ViewContext.HttpContext.User.FindFirstValue("WalletBalance");
 }
-<button asp-action="Create">Create Auction</button>
+<a href="@Url.Action("Create", "Auction")" class="btn btn-primary">Create Auction</a>
 
-<label>@userBalance   empty</label>
+<label>Your current balance: @userBalance</label>
 
 
 <table class="table table-sm table-dark">
@@ -31,9 +31,9 @@
         {
             <tr>
                 <td> @auction.Title</td>
-                <td>  @auction.UserId</td>
+                <td>  @auction.Username</td>
                 <td>  @auction.MaxBid</td>
-                <td>  @auction.EndTime</td>
+                <td>  @auction.RemainingTime</td>
             </tr>
         }
     </tbody>
