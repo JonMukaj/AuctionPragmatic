@@ -1,6 +1,6 @@
 ﻿using Entities.Models;
 
-namespace Repository.Contracts;
+namespace Contracts;
 
 public interface IAuctionRepository
 {
@@ -10,4 +10,5 @@ public interface IAuctionRepository
     Task<Auction> GetRecordById(int id);
     Task<IEnumerable<Auction>> GetAllAuctionsForUserId(int userId);
     Task<IEnumerable<Auction>> GetAllActiveAuctions();
+    Task<IEnumerable<Auction>> GetEndedAuctions();
 }

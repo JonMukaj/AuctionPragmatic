@@ -48,6 +48,31 @@ public class AuctionService : IAuctionService
         throw new NotImplementedException();
     }
 
+    public async Task<GetAuctionDetailDTO> GetAuctionById(int auctionId)
+    {
+        var auction = await _repositoryManager.AuctionRepository.GetRecordById(auctionId);
+        if (auction is null) throw new NotFoundException($"No auction was found for id {auctionId}");
+
+        var user = await _repositoryManager.UserRepository.GetRecordById(auction.UserId);
+        if (user is null) throw new NotFoundException("No user was found for auction");
+
+        var mapped = _mapper.Map<GetAuctionDetailDTO>(auction);
+
+        var maxBid = await _repositoryManager.BidRepository.GetMaximumBid(auction.Id);
+        if (maxBid is not null)
+        {
+            var maxBidder = await _repositoryManager.UserRepository.GetRecordById(maxBid.UserId);
+            if (maxBidder is null) throw new NotFoundException("No maximum user bidder was found for auction");
+            mapped.HighestBidAmount = maxBid.BidAmount;
+            mapped.HighestBidder = string.Concat(maxBidder.FirstName, " ", maxBidder.LastName);
+        }
+
+        mapped.CreatedBy = string.Concat(user.FirstName, " ", user.LastName);
+        mapped.RemainingTime = await GetRemainingTime(auction.EndTime);
+
+        return mapped;
+    }
+
     public async Task<IEnumerable<GetAuctionDTO>> GetAllAuctions()
     {
         var list = await _repositoryManager.AuctionRepository.GetAllActiveAuctions();
@@ -56,17 +81,19 @@ public class AuctionService : IAuctionService
 
         var mapped = new List<GetAuctionDTO>();
 
-        foreach (var i in list)
+        foreach (var auction in list)
         {
-            var user = await _repositoryManager.UserRepository.GetRecordById(i.UserId);
+            var user = await _repositoryManager.UserRepository.GetRecordById(auction.UserId);
+            var maxBid=await _repositoryManager.BidRepository.GetMaximumBid(auction.Id);
 
-            var auction = _mapper.Map<GetAuctionDTO>(i);
-            auction.Username = string.Concat(user.FirstName + " " + user.LastName);
+            var mappedAuction = _mapper.Map<GetAuctionDTO>(auction);
 
-           auction.RemainingTime = await GetRemainingTime(i.EndTime);
-         
+            mappedAuction.Username = string.Concat(user.FirstName + " " + user.LastName);
+            mappedAuction.MaxBid = maxBid != null ? maxBid.BidAmount : auction.StartingBid;
+            mappedAuction.RemainingTime = await GetRemainingTime(auction.EndTime);
 
-            mapped.Add(auction);
+
+            mapped.Add(mappedAuction);
         }
 
         return mapped;
@@ -81,7 +108,7 @@ public class AuctionService : IAuctionService
 
         if (remaining.Days >= 1)
         {
-            return await Task.FromResult( string.Concat(remaining.Days.ToString("D")," Days"));
+            return await Task.FromResult(string.Concat(remaining.Days.ToString("D"), " Days"));
         }
         else if (remaining.Hours >= 1 && remaining.Days < 1)
         {

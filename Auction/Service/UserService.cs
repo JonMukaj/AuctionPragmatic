@@ -104,10 +104,9 @@ public class UserService : IUserService
 
         if (!signUp.ConfirmPassword.Equals(signUp.Password))
             throw new BadRequestException("Password doesnt match");
-      
+
         var tokenHash = _cryptoUtils.Encrypt($"{user.Id}{user.Email}{new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()}");
 
-        var claims = await GetClaims(user, tokenHash);
         IdentityResult result = null;
 
         result = await _userManager.CreateAsync(user, signUp.Password);
@@ -117,21 +116,10 @@ public class UserService : IUserService
             var errorDetailsStr = string.Join("|", result.Errors.Select(x => x.Description));
             throw new BadRequestException(errorDetailsStr);
         }
+        var claims = await GetClaims(user, tokenHash);
         await _userManager.AddToRoleAsync(user, "User");
 
-       
-
-        //var properties = new AuthenticationProperties()
-        //{
-        //    AllowRefresh = true,
-        //    IsPersistent = true
-        //};
-        // 
-        //var tokenDto = await CreateToken(currentUser);
-
         return claims;
-
-
     }
 
     public async Task<ClaimsIdentity> Login(LoginUserDTO userLogin)
@@ -176,6 +164,8 @@ public class UserService : IUserService
                 new Claim("WalletBalance",!string.IsNullOrWhiteSpace(currentUser.WalletBalance.ToString())? currentUser.WalletBalance.ToString() ?? "" : "" ),
              //   new Claim("Image", currentUser != null && !string.IsNullOrWhiteSpace(currentUser.Image) ? $"{_defaultConfig.APIUrl}{currentUser.Image}" : ""),
                  };
+
+        await _userManager.AddClaimsAsync(currentUser, claims);
 
         var roles = await _userManager.GetRolesAsync(currentUser);
         if (roles is null)

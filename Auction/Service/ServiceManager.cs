@@ -15,7 +15,7 @@ public class ServiceManager : IServiceManager
 {
     private readonly Lazy<IUserService> _userService;
     private readonly Lazy<IAuctionService> _auctionService;
-  //  private readonly Lazy<IBidSer>
+    private readonly Lazy<IBidService> _bidService;
     public ServiceManager(IRepositoryManager repositoryManager
     , IMapper mapper
     , ILoggerManager logger
@@ -29,7 +29,9 @@ public class ServiceManager : IServiceManager
     {
         _userService = new Lazy<IUserService>(() => new UserService(logger, mapper, repositoryManager, userManager, signInManager, cryptoUtils));
         _auctionService = new Lazy<IAuctionService>(() => new AuctionService(logger, mapper, repositoryManager));
+        _bidService = new Lazy<IBidService>(() => new BidService(logger, mapper, repositoryManager));
     }
     public IUserService UserService => _userService.Value;
     public IAuctionService AuctionService => _auctionService.Value;
+    public IBidService BidService => _bidService.Value;
 }

@@ -31,12 +31,6 @@ public class AuthenticationController : Controller
         if (claims is not null)
         {
             await HttpContext.SignInAsync("MyCookieAuthenticationScheme", new ClaimsPrincipal(claims));
-
-            if (HttpContext.User.Identity.IsAuthenticated)
-            {
-                var userBalance = HttpContext.User.FindFirstValue("Id");
-                var test = HttpContext.User.Claims;
-            }
             return RedirectToAction("Index", "Home");
 
         }
@@ -49,15 +43,8 @@ public class AuthenticationController : Controller
     public async Task<IActionResult> Register(LoginAndRegisterViewModel request)
     {
         var claims = await _serviceManger.UserService.SignUpUserAsync(request.RegisterUser);
+        await HttpContext.SignInAsync("MyCookieAuthenticationScheme", new ClaimsPrincipal(claims));
 
-        var properties = new AuthenticationProperties()
-        {
-            AllowRefresh = true,
-            IsPersistent = true,
-            RedirectUri = "/Authentication/Login"
-        };
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claims), properties);
-    //    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claims));
         return RedirectToAction("Login", "Authentication");
     }
 

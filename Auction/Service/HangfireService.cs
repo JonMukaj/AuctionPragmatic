@@ -1,28 +1,40 @@
-﻿using Service.Contracts;
+﻿using System.Runtime.InteropServices;
+using Contracts;
+using Entities.Models;
+using Service.Contracts;
 
 namespace Service;
 
 public class HangfireService : IHangfireService
 {
-
-    public HangfireService()
+    private readonly IRepositoryManager _repositoryManager;
+    public HangfireService(IRepositoryManager repositoryManager)
     {
-       
+        _repositoryManager = repositoryManager;
     }
 
-    public Task UpdateDataMarket()
+    public async Task UpdateDataMarket()
     {
-        throw new NotImplementedException();
+        await GetEndedAuctions();
     }
 
-    //public Task UpdateDataMarket()
-    //{
-    //    Task.Run(async () =>
-    //        {
 
-    //        });
-    //    return Task.CompletedTask;
-    //}
+    #region private
 
+    private async Task GetEndedAuctions()
+    {
+        var list = await _repositoryManager.AuctionRepository.GetEndedAuctions();
 
+        foreach (var auction in list)
+        {
+            auction.IsEnded = true;
+            
+            _repositoryManager.AuctionRepository.UpdateRecord(auction);
+            //handle the wallet part
+        }
+
+        await _repositoryManager.SaveAsync();
+    }
+
+    #endregion
 }

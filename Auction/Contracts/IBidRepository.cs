@@ -10,4 +10,5 @@ public interface IBidRepository
     Task<Bid> GetRecordById(int id);
     Task<IEnumerable<Bid>> GetBidsForUserId(int userId);
     Task<IEnumerable<Bid>> GetBidsForAuctionId(int auctionId);
+    Task<Bid> GetMaximumBid(int auctionId);
 }

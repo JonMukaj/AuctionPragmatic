@@ -1,0 +1,123 @@
+﻿@model Shared.DTO.GetAuctionDetailDTO;
+@{
+    Layout = "_Layout";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Auction</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
+
+    .container {
+        
+        margin: auto;
+        overflow: hidden;
+        padding: 30px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .header h1 {
+        font-size: 24px;
+        margin: 0;
+    }
+
+    .header .created-by {
+        font-size: 18px;
+        margin: 0;
+    }
+
+    .time-remaining {
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+
+    textarea {
+        width: calc(100% - 20px);
+        height: 200px;
+        padding: 10px;
+        font-size: 16px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        border: 1px solid #003e4e;
+    }
+
+    .current-bid {
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+
+    .bid-form {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .bid-form input {
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        width: calc(70% - 20px);
+    }
+
+    .bid-form button {
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: none;
+        background-color: #3498db;
+        color: #fff;
+        width: 28%;
+    }
+</style>
+
+</head>
+
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Title</h1>
+        <div class="created-by">Created By: @Model.CreatedBy</div>
+    </div>
+
+    <div class="time-remaining">Time Remaining: @Model.RemainingTime</div>
+
+    <textarea readonly>@Model.Description</textarea>
+
+    <div class="current-bid">
+        Current Highest Bid: <span>@Model.HighestBidder</span> <span>@Model.HighestBidAmount</span>
+    </div>
+    <form class="bid-form" method="post" asp-controller="Bid" asp-action="Create">
+        <input id="BidAmount" name="BidAmount" type="number" placeholder="Enter bid amount" required>
+        <input type="hidden" id="AuctionId" name="AuctionId" value=@Model.Id>
+        <button type="submit">Bid</button>
+    </form>
+
+</div>
+</body>
+
+</html>
+
+
+@{
+ 
+}

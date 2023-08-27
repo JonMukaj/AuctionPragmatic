@@ -44,5 +44,12 @@ namespace Auction.Controllers
             return RedirectToAction("List");
         }
 
+        [HttpGet("{auctionId}")]
+        public async Task<IActionResult> Details(int auctionId)
+        {
+            var auction = await _serviceManger.AuctionService.GetAuctionById(auctionId);
+            return View(auction);
+        }
+
     }
 }

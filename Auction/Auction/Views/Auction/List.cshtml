@@ -30,7 +30,9 @@
         @foreach(var auction in Model)
         {
             <tr>
-                <td> @auction.Title</td>
+                <td>
+                    <a href="@Url.Action("Details", "Auction", new { auctionId =@auction.Id })"> @auction.Title</a>
+                </td>
                 <td>  @auction.Username</td>
                 <td>  @auction.MaxBid</td>
                 <td>  @auction.RemainingTime</td>

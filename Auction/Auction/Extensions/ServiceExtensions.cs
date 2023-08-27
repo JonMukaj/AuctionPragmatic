@@ -62,6 +62,14 @@ public static class ServiceExtensions
             o.Password.RequiredLength = 8;
             o.Password.RequireNonAlphanumeric = false;
         }).AddEntityFrameworkStores<RepositoryContext>().AddDefaultTokenProviders();
+
+
+        services.ConfigureApplicationCookie(options =>
+        {
+            options.LoginPath = "/Authentication/Login";
+            options.LogoutPath = "/Authentication/Logout";
+            options.AccessDeniedPath = "/Authentication/AccessDenied";
+        });
     }
 
     public static void ConfigureResponseCaching(this IServiceCollection services) => services.AddResponseCaching();
@@ -79,19 +87,12 @@ public static class ServiceExtensions
     public static void AddCryptographyUtils(this IServiceCollection services) =>
         services.AddScoped<ICryptoUtils, CryptoUtils>();
 
-
-    public static void AddAuthenticationCookie(this IServiceCollection services) =>
-        services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = "MyCookieAuthenticationScheme";
-                options.DefaultSignInScheme = "MyCookieAuthenticationScheme";
-                options.DefaultChallengeScheme = "MyCookieAuthenticationScheme";
-            })
-            .AddCookie("MyCookieAuthenticationScheme", options =>
-            {
-                options.LoginPath = new PathString("/Authentication/Login");
-                options.ExpireTimeSpan = TimeSpan.FromHours(2);
-            });
+    //public static void ConfigureCookiePath(this IServiceCollection services)=> services.ConfigureApplicationCookie(options =>
+    //{
+    //    options.LoginPath = "/Authentication/Login";
+    //    options.LogoutPath = "/Authentication/Logout";
+    //    options.Cookie.Name = "MyCookieAuthenticationScheme";
+    //});
     public static void ConfigureSignalR(this IServiceCollection services) =>
         services.AddSignalR().AddJsonProtocol(options =>
         {
