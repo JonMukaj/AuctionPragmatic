@@ -42,6 +42,10 @@
                 margin:27px;
             }
 
+        .text-danger {
+            color: red;
+        }
+
                 .form .input-group label {
                     margin-right: 10px;
                     width: 100px;
@@ -54,6 +58,7 @@
                     border: 1px solid #ccc;
                     border-radius: 5px;
                 }
+
 
             .form .column {
                 flex: 1;
@@ -80,42 +85,53 @@
             color: white;
             font-weight: bold;
         }
+
+        .opacity {
+            transition: opacity 0.3s ease-in-out;
+            opacity: 0.2; 
+        }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <form class="form" asp-controller="Auction" asp-action="Create" method="post">
-            <h2>Create Auction</h2>
-            <div class="column">
-                <div class="input-group">
-                    <label for="Title">Title</label>
-                    <input type="text" id="Title" name="Title" placeholder="Title" required asp-for="Title">
-                </div>
-                <div class="input-group">
-                    <label for="Description">Description</label>
-                    <textarea id="Description" name="Description" placeholder="Description" asp-for="Description"></textarea>
-                </div>
+<div class="container">
+    <form class="form" asp-controller="Auction" asp-action="Create" method="post">
+        <h2>Create Auction</h2>
+        <div class="column">
+            <div class="input-group">
+                <label for="Title">Title</label>
+                <input type="text" id="Title" name="Title" placeholder="Title" required asp-for="Title">
+                <span asp-validation-for="Title" class="text-danger"></span>
             </div>
-            <div class="column">
-                <div class="input-group">
-                    <label for="StartingBid">Starting Bid</label>
-                    <input type="number" id="StartingBid" name="StartingBid" required asp-for="StartingBid">
-                </div>
-                <div class="input-group">
-                    <label for="StartTime">Start Time</label>
-                    <input type="datetime-local" id="StartTime" name="StartTime" asp-for="StartTime">
-                </div>
-                <div class="input-group">
+            <div class="input-group">
+                <label for="Description">Description</label>
+                <textarea id="Description" name="Description" placeholder="Description" asp-for="Description"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="column">
+            <div class="input-group">
+                <label for="StartingBid">Starting Bid</label>
+                <input type="number" min="1" id="StartingBid" name="StartingBid" required asp-for="StartingBid">
+                <span asp-validation-for="StartingBid" class="text-danger"></span>
+            </div>
+            <div class="input-group">
+                    <label for="StartTime" class="opacity">Start Time</label>
+                    <input type="datetime-local" id="StartTime" class="opacity" name="StartTime" asp-for="StartTime">
+                <span asp-validation-for="StartTime" class="text-danger"></span>
+            </div>
+            <div class="input-group">
                     <label for="EndTime">End Time</label>
-                    <input type="datetime-local" id="EndTime" name="EndTime" required asp-for="EndTime">
-                </div>
-                <div class="submit-button">
-                    <button type="submit">Create</button>
-                </div>
+                <input type="datetime-local" id="EndTime" name="EndTime" required asp-for="EndTime">
+                <span asp-validation-for="EndTime" class="text-danger"></span>
             </div>
-        </form>
-    </div>
+            <div class="submit-button">
+                <button type="submit">Create</button>
+            </div>
+        </div>
+    </form>
+</div>
+
 </body>
 
 </html>

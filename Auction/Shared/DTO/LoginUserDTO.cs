@@ -5,7 +5,7 @@ namespace Shared.DTO;
 public class LoginUserDTO
 {
     [Required]
-    [EmailAddress]
+    [StringLength(20, MinimumLength = 3, ErrorMessage = "Username must be between 3 and 20 characters.")]
     public string Username { get; set; }
 
     [Required]

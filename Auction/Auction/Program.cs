@@ -34,6 +34,7 @@ builder.Services.AddCryptographyUtils();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.ConfigureSignalR();
 builder.Services.AddSignalR();
+builder.Services.ConfigureSession();
 
 
 if (builder.Configuration.GetSection("DefaultConfiguration:UseHangfire").Get<bool>() == true)
@@ -71,7 +72,7 @@ else
 {
     app.UseDeveloperExceptionPage();
 }
-app.UseExceptionHandler("/Error/Error");
+//app.UseExceptionHandler("/Error/Error");
 
 app.UseStaticFiles();
 app.UseRouting();
@@ -91,5 +92,7 @@ if (builder.Configuration.GetSection("DefaultConfiguration:UseHangfire").Get<boo
     RecurringJob.AddOrUpdate<IHangfireService>("updateMarketData", service => service.UpdateDataMarket(), Cron.Minutely(), TimeZoneInfo.Local);
 
 }
+
+app.UseSession();
 
 app.Run();

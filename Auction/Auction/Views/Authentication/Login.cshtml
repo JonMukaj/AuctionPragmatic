@@ -11,6 +11,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login and Register Forms</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+
     <style>
         body, html {
             height: 100%;
@@ -77,31 +80,42 @@
             <div class="input-group">
                 <label for="login-username">Username</label>
                 <input type="text" id="login-username" name="LoginUser.Username" placeholder="Username" required asp-for="LoginUser.Username">
+                <span asp-validation-for="LoginUser.Username" class="text-danger"></span>
             </div>
             <div class="input-group">
                 <label for="login-password">Password</label>
-                <input type="password" id="login-password" name="LoginUser.Password" placeholder="Password" required asp-for="LoginUser.Password">            </div>
+                <input type="password" id="login-password" name="LoginUser.Password" placeholder="Password" required asp-for="LoginUser.Password">
+                <span asp-validation-for="LoginUser.Password" class="text-danger"></span>
+            </div>
+
             <button type="submit">Login</button>
         </form>
-        
+
 
         <form class="form register-form" asp-controller="Authentication" asp-action="Register" method="post">
             <h2>Register</h2>
             <div class="name-inputs input-group">
                 <input type="text" placeholder="First Name" required asp-for="RegisterUser.FirstName">
+                <span asp-validation-for="RegisterUser.FirstName" class="text-danger"></span>
+
                 <input type="text" placeholder="Last Name" required asp-for="RegisterUser.LastName">
+                <span asp-validation-for="RegisterUser.LastName" class="text-danger"></span>
             </div>
             <div class="input-group">
                 <input type="text" placeholder="Username" required asp-for="RegisterUser.Username">
+                <span asp-validation-for="RegisterUser.Username" class="text-danger"></span>
             </div>
             <div class="input-group">
                 <input type="password" placeholder="Password" required asp-for="RegisterUser.Password">
+                <span asp-validation-for="RegisterUser.Password" class="text-danger"></span>
             </div>
             <div class="input-group">
                 <input type="password" placeholder="Confirm Password" required asp-for="RegisterUser.ConfirmPassword">
+                <span asp-validation-for="RegisterUser.ConfirmPassword" class="text-danger"></span>
             </div>
             <button type="submit">Register</button>
         </form>
+
     </div>
 </body>
 

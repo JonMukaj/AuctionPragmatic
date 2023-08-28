@@ -28,12 +28,20 @@ public class HangfireService : IHangfireService
         foreach (var auction in list)
         {
             auction.IsEnded = true;
-            
             _repositoryManager.AuctionRepository.UpdateRecord(auction);
-            //handle the wallet part
-        }
 
-        await _repositoryManager.SaveAsync();
+            //wallet part
+            var maxBid = await _repositoryManager.BidRepository.GetMaximumBid(auction.Id);
+
+            if (maxBid is not null) // if someone has bid for the user auction
+            {
+                var userWhoPosted = await _repositoryManager.UserRepository.GetRecordById(auction.UserId);
+                userWhoPosted.WalletBalance += maxBid.BidAmount;
+                _repositoryManager.UserRepository.UpdateRecord(userWhoPosted);
+                await _repositoryManager.SaveAsync();
+            }
+        }
+        //  await _repositoryManager.SaveAsync();
     }
 
     #endregion

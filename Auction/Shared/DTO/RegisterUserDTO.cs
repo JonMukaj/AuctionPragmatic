@@ -1,4 +1,5 @@
-﻿using System.Dynamic;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Dynamic;
 
 namespace Shared.DTO;
 

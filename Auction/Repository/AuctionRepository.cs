@@ -21,11 +21,11 @@ public class AuctionRepository : RepositoryBase<Auction>, IAuctionRepository
         await FindByCondition(e => e.Id.Equals(id)).FirstOrDefaultAsync();
 
     public async Task<IEnumerable<Auction>> GetAllAuctionsForUserId(int userId) =>
-        await FindByCondition(e => e.UserId.Equals(userId)).ToListAsync();
+        await FindByCondition(e => e.UserId.Equals(userId) && e.IsEnded.Equals(false)).ToListAsync();
 
     public async Task<IEnumerable<Auction>> GetAllActiveAuctions() =>
-        await FindByCondition(e => e.IsEnded.Equals(false) && e.EndTime>=DateTime.Now).OrderBy(x => x.EndTime).ToListAsync();
+        await FindByCondition(e => e.IsEnded.Equals(false) && e.EndTime>=DateTime.Now && e.StartTime<=DateTime.Now).OrderBy(x => x.EndTime).ToListAsync();
 
     public async Task<IEnumerable<Auction>> GetEndedAuctions() =>
-        await FindByCondition(e => e.EndTime <= DateTime.Now).ToListAsync();
+        await FindByCondition(e => e.EndTime <= DateTime.Now && e.IsEnded.Equals(false)).ToListAsync();
 }

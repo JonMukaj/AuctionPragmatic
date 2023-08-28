@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DTO;
 using System.Security.Claims;
+using Entities.Exceptions;
 
 namespace Auction.Controllers;
 
@@ -26,13 +27,22 @@ public class AuthenticationController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(LoginAndRegisterViewModel request)
     {
-        var claims = await _serviceManger.UserService.Login(request.LoginUser);
-
-        if (claims is not null)
+        try
         {
-            await HttpContext.SignInAsync("MyCookieAuthenticationScheme", new ClaimsPrincipal(claims));
-            return RedirectToAction("Index", "Home");
+            var claims = await _serviceManger.UserService.Login(request.LoginUser);
 
+            if (claims is not null)
+            {
+                await HttpContext.SignInAsync("MyCookieAuthenticationScheme", new ClaimsPrincipal(claims));
+                return RedirectToAction("Index", "Home");
+
+            }
+        }
+        catch (DefaultException ex)
+        {
+            //  ModelState.AddModelError("LoginUser.Username", ex.Message);
+            ModelState.AddModelError(ex.PropertyKey, ex.Message);
+            return View(request);
         }
 
         ViewData["ValidateMessage"] = "user is not logged in!";
@@ -42,10 +52,18 @@ public class AuthenticationController : Controller
     [HttpPost]
     public async Task<IActionResult> Register(LoginAndRegisterViewModel request)
     {
-        var claims = await _serviceManger.UserService.SignUpUserAsync(request.RegisterUser);
-        await HttpContext.SignInAsync("MyCookieAuthenticationScheme", new ClaimsPrincipal(claims));
-
-        return RedirectToAction("Login", "Authentication");
+        try
+        {
+            var claims = await _serviceManger.UserService.SignUpUserAsync(request.RegisterUser);
+            await HttpContext.SignInAsync("MyCookieAuthenticationScheme", new ClaimsPrincipal(claims));
+        }
+        catch (DefaultException ex)
+        {
+            //  ModelState.AddModelError("LoginUser.Username", ex.Message);
+            ModelState.AddModelError(ex.PropertyKey, ex.Message);
+            return View("Login",request);
+        }
+        return RedirectToAction("Index", "Home");
     }
 
     public async Task<IActionResult> Logout()

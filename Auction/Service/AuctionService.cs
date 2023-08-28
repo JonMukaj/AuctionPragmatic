@@ -30,6 +30,11 @@ public class AuctionService : IAuctionService
         var user = await _repositoryManager.UserRepository.GetRecordById(loggedUser);
         if (user is null) throw new NotFoundException($"No user was found with id {loggedUser}");
 
+        if (request.StartTime is null)
+            auction.StartTime=DateTime.Now.ToLocalTime();
+
+        await ValidateRequest(request);
+
         auction.UserId = loggedUser;
         auction.MaxBid = auction.StartingBid;
 
@@ -60,7 +65,6 @@ public class AuctionService : IAuctionService
 
         var maxBid = await _repositoryManager.BidRepository.GetMaximumBid(auction.Id);
         if (maxBid is not null)
-
         {
             var maxBidder = await _repositoryManager.UserRepository.GetRecordById(maxBid.UserId);
             if (maxBidder is null) throw new NotFoundException("No maximum user bidder was found for auction");
@@ -121,6 +125,26 @@ public class AuctionService : IAuctionService
             return await Task.FromResult(string.Concat(remaining.Minutes.ToString("D"), " Minutes"));
         }
         // return await  Task.FromResult(remaining.ToString("g"));
+    }
+
+    private async Task ValidateRequest(CreateAuctionDTO request)
+    {
+       
+        if (request.Title.Length < 4) 
+            throw new DefaultException("Title", "Title must be greater length than 3!");
+
+        if (request.Description.Length < 11) 
+            throw new DefaultException("Description", "Description must be greater length than 10!");
+
+        if (request.StartTime < DateTime.Now)
+            throw new DefaultException("StartTime", "Enter a valid date!");
+
+        if (request.EndTime < DateTime.Now)
+            throw new DefaultException("EndTime", "Enter a valid date!");
+
+        if(request.StartingBid<1)
+            throw new DefaultException("StartingBid", "Enter a positive amount!");
+
     }
 
     #endregion

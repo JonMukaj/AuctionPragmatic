@@ -1,4 +1,6 @@
 ﻿using System.Security.Claims;
+using Azure.Core;
+using Entities.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -34,18 +36,25 @@ namespace Auction.Controllers
             return View(result);
         }
 
-     
+
         public async Task<IActionResult> Create()
         {
-        //    var result = await _serviceManger.AuctionService.CreateAuction(request);
             return View();
         }
-            
+
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] CreateAuctionDTO request)
         {
-            var userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            var result = await _serviceManger.AuctionService.CreateAuction(request,userId);
+            try
+            {
+                var userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+                var result = await _serviceManger.AuctionService.CreateAuction(request, userId);
+            }
+            catch (DefaultException ex)
+            {
+                ModelState.AddModelError(ex.PropertyKey, ex.Message);
+                return View(request);
+            }
             return RedirectToAction("List");
         }
 
@@ -53,6 +62,14 @@ namespace Auction.Controllers
         public async Task<IActionResult> Details(int auctionId)
         {
             var auction = await _serviceManger.AuctionService.GetAuctionById(auctionId);
+           
+            if (TempData["ErrorMessage"] != null && TempData["PropertyKey"] != null)
+            {
+                //this is used only when we get an error from the BidController
+                string errorMessage = TempData["ErrorMessage"].ToString();
+                string propertyKey = TempData["PropertyKey"].ToString();
+                ModelState.AddModelError(propertyKey, errorMessage);
+            }
             return View(auction);
         }
 

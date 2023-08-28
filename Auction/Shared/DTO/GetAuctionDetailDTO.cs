@@ -11,4 +11,5 @@ public class GetAuctionDetailDTO
     public decimal HighestBidAmount { get; set; }
     public bool IsEnded { get; set; }
     public string RemainingTime { get; set; }
+    public decimal? BidAmount { get; set; }
 }

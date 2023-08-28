@@ -88,6 +88,10 @@
         color: #fff;
         width: 28%;
     }
+
+        .text-danger {
+            color: red;
+        }
 </style>
 
 </head>
@@ -108,6 +112,7 @@
     </div>
     <form class="bid-form" method="post" asp-controller="Bid" asp-action="Create">
         <input id="BidAmount" name="BidAmount" type="number" placeholder="Enter bid amount" required>
+        <span asp-validation-for="BidAmount" class="text-danger"></span>
         <input type="hidden" id="AuctionId" name="AuctionId" value=@Model.Id>
         <button type="submit">Bid</button>
     </form>

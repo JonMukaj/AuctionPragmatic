@@ -87,16 +87,15 @@ public static class ServiceExtensions
     public static void AddCryptographyUtils(this IServiceCollection services) =>
         services.AddScoped<ICryptoUtils, CryptoUtils>();
 
-    //public static void ConfigureCookiePath(this IServiceCollection services)=> services.ConfigureApplicationCookie(options =>
-    //{
-    //    options.LoginPath = "/Authentication/Login";
-    //    options.LogoutPath = "/Authentication/Logout";
-    //    options.Cookie.Name = "MyCookieAuthenticationScheme";
-    //});
     public static void ConfigureSignalR(this IServiceCollection services) =>
         services.AddSignalR().AddJsonProtocol(options =>
         {
             options.PayloadSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
         });
 
+    public static void ConfigureSession(this IServiceCollection services)
+    {
+        services.AddSession();
+        services.AddMvc().AddSessionStateTempDataProvider();
+    }
 }

@@ -8,3 +8,19 @@
 
 2023-08-28 13:24:13.1961|WARN| AuthenticationFailed |  
 
+2023-08-28 13:26:38.3064|WARN| AuthenticationFailed |  
+
+2023-08-28 13:28:28.3674|WARN| AuthenticationFailed |  
+
+2023-08-28 13:49:07.3229|WARN| AuthenticationFailed |  
+
+2023-08-28 13:50:18.2702|WARN| AuthenticationFailed |  
+
+2023-08-28 14:04:30.2264|WARN| AuthenticationFailed |  
+
+2023-08-28 14:07:09.7160|WARN| AuthenticationFailed |  
+
+2023-08-28 14:47:28.5557|WARN| AuthenticationFailed |  
+
+2023-08-28 18:04:52.9183|WARN| AuthenticationFailed |  
+

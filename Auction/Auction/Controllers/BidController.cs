@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Entities.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DTO;
@@ -19,8 +20,16 @@ namespace Auction.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] CreateBidDTO request)
         {
-            var userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            var result = await _serviceManager.BidService.CreateBid(request, userId);
+            try
+            {
+                var userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+                var result = await _serviceManager.BidService.CreateBid(request, userId);
+            }
+            catch (DefaultException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                TempData["PropertyKey"] = ex.PropertyKey;
+            }
 
             return RedirectToAction("Details","Auction",new {request.AuctionId});
         }

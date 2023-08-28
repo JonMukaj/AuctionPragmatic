@@ -32,10 +32,10 @@ public class BidService:IBidService
 
 
         if (request.BidAmount > user.WalletBalance)
-            throw new BadRequestException("User does not have enough balance!");
+            throw new DefaultException("BidAmount","User does not have enough balance!");
 
-        if (request.BidAmount < auction.MaxBid)
-            throw new BadRequestException("New bid should be higher that the maximum bid!");
+        if (request.BidAmount <= auction.MaxBid)
+            throw new DefaultException("BidAmount","New bid should be higher that the maximum bid!");
 
         if (request.BidAmount > auction.MaxBid)
         {
@@ -49,7 +49,7 @@ public class BidService:IBidService
         {
             var remainingBalance = request.BidAmount - currentUserBid.BidAmount;
 
-            if (user.WalletBalance > remainingBalance) //user can bin
+            if (user.WalletBalance > remainingBalance) //user can bid
             {
                 user.WalletBalance -= remainingBalance;
             }
