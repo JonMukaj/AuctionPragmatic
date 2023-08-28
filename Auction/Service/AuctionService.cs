@@ -43,9 +43,21 @@ public class AuctionService : IAuctionService
         return true;
     }
 
-    public Task<bool> DeleteAuction(int auctionId)
+    public async Task<bool> DeleteAuction(int auctionId)
     {
-        throw new NotImplementedException();
+       var auction=await _repositoryManager.AuctionRepository.GetRecordById(auctionId);
+       if (auction is null) throw new NotFoundException($"No auction with id {auctionId}");
+
+       var listOfBids = await _repositoryManager.BidRepository.GetBidsForAuctionId(auctionId);
+
+       foreach (var bid in listOfBids ) 
+       {
+           _repositoryManager.BidRepository.DeleteRecord(bid);
+       }
+
+       _repositoryManager.AuctionRepository.DeleteRecord(auction);
+       await _repositoryManager.SaveAsync();
+       return true;
     }
 
     public Task<bool> UpdateAuction(int auctionId, UpdateAuctionDTO request)
