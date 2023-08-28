@@ -60,6 +60,7 @@ public class AuctionService : IAuctionService
 
         var maxBid = await _repositoryManager.BidRepository.GetMaximumBid(auction.Id);
         if (maxBid is not null)
+
         {
             var maxBidder = await _repositoryManager.UserRepository.GetRecordById(maxBid.UserId);
             if (maxBidder is null) throw new NotFoundException("No maximum user bidder was found for auction");
@@ -67,6 +68,7 @@ public class AuctionService : IAuctionService
             mapped.HighestBidder = string.Concat(maxBidder.FirstName, " ", maxBidder.LastName);
         }
 
+        mapped.HighestBidAmount =auction.MaxBid.Value;
         mapped.CreatedBy = string.Concat(user.FirstName, " ", user.LastName);
         mapped.RemainingTime = await GetRemainingTime(auction.EndTime);
 

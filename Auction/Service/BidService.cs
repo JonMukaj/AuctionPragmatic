@@ -30,10 +30,35 @@ public class BidService:IBidService
         var auction=await _repositoryManager.AuctionRepository.GetRecordById(request.AuctionId);
         if (auction is null) throw new NotFoundException($"No auction was found with id {request.AuctionId}");
 
+
         if (request.BidAmount > user.WalletBalance)
             throw new BadRequestException("User does not have enough balance!");
 
-        user.WalletBalance -= request.BidAmount;
+        if (request.BidAmount < auction.MaxBid)
+            throw new BadRequestException("New bid should be higher that the maximum bid!");
+
+        if (request.BidAmount > auction.MaxBid)
+        {
+            auction.MaxBid = request.BidAmount;
+            _repositoryManager.AuctionRepository.UpdateRecord(auction);
+        }
+
+        var currentUserBid = await _repositoryManager.BidRepository.GetBidForUserIdAndAuctionId(userId, auction.Id);
+
+        if (currentUserBid is not null)
+        {
+            var remainingBalance = request.BidAmount - currentUserBid.BidAmount;
+
+            if (user.WalletBalance > remainingBalance) //user can bin
+            {
+                user.WalletBalance -= remainingBalance;
+            }
+        }
+        else// user FIRST bid for the auction
+        {
+            user.WalletBalance -= request.BidAmount;
+        }
+
         _repositoryManager.UserRepository.UpdateRecord(user);
 
         bid.BidTime = bid.DateCreated = DateTime.Now;
@@ -41,7 +66,6 @@ public class BidService:IBidService
 
         //var maxBid = await _repositoryManager.BidRepository.GetMaximumBid(auction.Id);
         //if (maxBid is null) throw new NotFoundException($"No bid was found for auction with id{auction.Id}");
-
 
 
         _repositoryManager.BidRepository.CreateRecord(bid);

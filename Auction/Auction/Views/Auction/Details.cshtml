@@ -104,7 +104,7 @@
     <textarea readonly>@Model.Description</textarea>
 
     <div class="current-bid">
-        Current Highest Bid: <span>@Model.HighestBidder</span> <span>@Model.HighestBidAmount</span>
+        Current Highest Bid: <span  style="font-weight:bold">@Model.HighestBidder</span> <span>$@Model.HighestBidAmount</span>
     </div>
     <form class="bid-form" method="post" asp-controller="Bid" asp-action="Create">
         <input id="BidAmount" name="BidAmount" type="number" placeholder="Enter bid amount" required>

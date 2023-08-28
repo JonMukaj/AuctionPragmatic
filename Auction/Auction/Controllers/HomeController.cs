@@ -1,4 +1,5 @@
 ﻿using Auction.Models;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -23,10 +24,20 @@ namespace Auction.Controllers
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        //public IActionResult Error()
+        //{
+        //    return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        //}
+
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var exceptionDetails = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
+            ViewBag.ExceptionPath = exceptionDetails.Path;
+            ViewBag.ExceptionMessage = exceptionDetails.Error.Message;
+            ViewBag.Stacktrace = exceptionDetails.Error.StackTrace;
+
+            return View("Error");
         }
     }
 }

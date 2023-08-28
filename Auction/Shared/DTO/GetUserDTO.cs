@@ -7,5 +7,6 @@ public class GetUserDTO
     public string LastName { get; set; }
     public string Email { get; set; }
     public string PhoneNumber { get; set; }
+    public decimal WalletBalance { get; set; }
     public DateTime DateCreated { get; set; }
 }

@@ -20,12 +20,17 @@ namespace Auction.Controllers
 
         public async Task<IActionResult> List()
         {
-            if (HttpContext.User.Identity.IsAuthenticated)
+            var auctionList = await _serviceManger.AuctionService.GetAllAuctions();
+
+            var userId = int.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var loggedUser = await _serviceManger.UserService.GetUserById(userId);
+
+            var result = new GetAuctionListWithUserDTO
             {
-                var userBalance = HttpContext.User.FindFirstValue("Id");
-                var test = HttpContext.User.Claims;
-            }
-            var result = await _serviceManger.AuctionService.GetAllAuctions();
+                AuctionDetails = auctionList,
+                UserDetails = loggedUser
+            };
+
             return View(result);
         }
 

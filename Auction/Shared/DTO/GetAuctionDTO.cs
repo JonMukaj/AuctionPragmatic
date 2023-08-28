@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
 namespace Shared.DTO;
 
 public class GetAuctionDTO

@@ -1,12 +1,10 @@
 ﻿@using System.Security.Claims
-@model IEnumerable<Shared.DTO.GetAuctionDTO>
+@*@model IEnumerable<Shared.DTO.GetAuctionDTO>*@
+@model Shared.DTO.GetAuctionListWithUserDTO;
 
-@{
-    var userBalance = ViewContext.HttpContext.User.FindFirstValue("WalletBalance");
-}
 <a href="@Url.Action("Create", "Auction")" class="btn btn-primary">Create Auction</a>
 
-<label>Your current balance: @userBalance</label>
+<label>Your current balance: @Model.UserDetails.WalletBalance</label>
 
 
 <table class="table table-sm table-dark">
@@ -27,7 +25,7 @@
     </tr>
     </thead>
     <tbody>
-        @foreach(var auction in Model)
+        @foreach(var auction in Model.AuctionDetails)
         {
             <tr>
                 <td>

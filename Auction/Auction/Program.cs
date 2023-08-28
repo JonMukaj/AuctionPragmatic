@@ -65,13 +65,13 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/Error/Error");
 }
 else
 {
     app.UseDeveloperExceptionPage();
 }
-app.UseExceptionHandler("/Home/Error");
+app.UseExceptionHandler("/Error/Error");
 
 app.UseStaticFiles();
 app.UseRouting();
