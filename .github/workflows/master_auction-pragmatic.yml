@@ -37,7 +37,7 @@ jobs:
 
       - name: Update database
         run: |
-          cd ${{ inputs.schema-manager-directory }}
+          cd ./Auction/Auction
           dotnet ef database update || exit 1
         shell: bash
         env:
