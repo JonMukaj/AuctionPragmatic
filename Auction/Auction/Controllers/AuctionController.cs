@@ -73,6 +73,7 @@ namespace Auction.Controllers
             return View(auction);
         }
 
+
         [HttpPost("delete/{auctionId}")]
         public async Task<IActionResult> Delete(int auctionId)
         {
