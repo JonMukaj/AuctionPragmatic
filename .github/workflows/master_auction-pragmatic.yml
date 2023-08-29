@@ -9,6 +9,7 @@ on:
       - master
   workflow_dispatch:
 
+    
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -29,6 +30,18 @@ jobs:
       - name: dotnet publish
         working-directory: ./Auction/Auction
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+
+      - name: Install EF Core CLI
+        run: dotnet tool install dotnet-ef --global
+        shell: bash
+
+      - name: Update database
+        run: |
+          cd ${{ inputs.schema-manager-directory }}
+          dotnet ef database update || exit 1
+        shell: bash
+        env:
+          DATABASE_CONNECTION_STRING: ${{ secrets.DATABASE_CONNECTION_STRING }}
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
