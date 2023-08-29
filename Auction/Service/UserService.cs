@@ -53,7 +53,6 @@ public class UserService : IUserService
             throw new NotFoundException($"No user were found with id {userId}");
 
         var mapp = _mapper.Map(request, existingUser);
-        mapp.PhoneNumber = request.Mobile;
         mapp.DateModified = DateTime.Now;
 
         _repositoryManager.UserRepository.UpdateRecord(mapp);
@@ -97,13 +96,22 @@ public class UserService : IUserService
         user.WalletBalance = 1000;
 
 
-        var foundEmail = _userManager.Users.FirstOrDefault(x => x.Email == signUp.Username);
+        var foundEmail = _userManager.Users.FirstOrDefault(x => x.UserName == signUp.Username);
         if (foundEmail != null)
-            throw new BadRequestException("EmailExists");
+            throw new DefaultException("RegisterUser.Username", "Username already exists");
+        //  throw new BadRequestException("EmailExists");
+
+        if (signUp.Password.Length < 4)
+            throw new DefaultException("RegisterUser.Password", "Password must be 8 characters long!");
 
 
         if (!signUp.ConfirmPassword.Equals(signUp.Password))
-            throw new BadRequestException("Password doesnt match");
+            throw new DefaultException("RegisterUser.ConfirmPassword", "Password does not match!");
+
+
+        //  throw new BadRequestException("Password doesnt match");
+
+        var tokenHash = _cryptoUtils.Encrypt($"{user.Id}{user.Email}{new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()}");
 
         IdentityResult result = null;
 
@@ -112,25 +120,19 @@ public class UserService : IUserService
         if (!result.Succeeded)
         {
             var errorDetailsStr = string.Join("|", result.Errors.Select(x => x.Description));
-            throw new BadRequestException(errorDetailsStr);
+            throw new DefaultException("RegisterUser.ConfirmPassword", errorDetailsStr);
         }
+        var claims = await GetClaims(user, tokenHash);
         await _userManager.AddToRoleAsync(user, "User");
 
-        var tokenHash = _cryptoUtils.Encrypt($"{user.Id}{user.Email}{new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()}");
 
-        var claims = await GetClaims(user, tokenHash);
-
-        var properties = new AuthenticationProperties()
+        var validateUser = await _signInManager.PasswordSignInAsync(user, signUp.Password, false, lockoutOnFailure: true);
+        if (!validateUser.Succeeded)
         {
-            AllowRefresh = true,
-            IsPersistent = true
-        };
-        // 
-        //var tokenDto = await CreateToken(currentUser);
+            _logger.LogWarn(string.Format("AuthenticationFailed"));
+        }
 
         return claims;
-
-
     }
 
     public async Task<ClaimsIdentity> Login(LoginUserDTO userLogin)
@@ -139,9 +141,12 @@ public class UserService : IUserService
 
         currentUser = _userManager.Users.FirstOrDefault(u => u.Email == userLogin.Username || u.UserName == userLogin.Username);
 
-        if (currentUser == null)
-            throw new BadRequestException("WrongEmailPassword");
+        if (currentUser == null) throw new DefaultException("LoginUser.Username", "No user was found !");
+        // throw new BadRequestException("LoginUser.Username", "No user was found !");
 
+        var tokenHash = _cryptoUtils.Encrypt($"{currentUser.Id}{currentUser.Email}{new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()}");
+
+        var claims = await GetClaims(currentUser, tokenHash);
 
         var validateUser = await _signInManager.PasswordSignInAsync(currentUser, userLogin.Password, false, lockoutOnFailure: true);
 
@@ -149,18 +154,9 @@ public class UserService : IUserService
         {
             _logger.LogWarn(string.Format("AuthenticationFailed"));
 
-            throw new BadRequestException("WrongEmailPassword");
+            //   throw new BadRequestException("Wrong password!");
+            throw new DefaultException("LoginUser.Password", "Wrong password!");
         }
-
-        var tokenHash = _cryptoUtils.Encrypt($"{currentUser.Id}{currentUser.Email}{new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()}");
-
-        var claims = await GetClaims(currentUser, tokenHash);
-
-        var properties = new AuthenticationProperties()
-        {
-            AllowRefresh = true,
-            IsPersistent = true
-        };
 
         return claims;
 
@@ -183,21 +179,14 @@ public class UserService : IUserService
              //   new Claim("Image", currentUser != null && !string.IsNullOrWhiteSpace(currentUser.Image) ? $"{_defaultConfig.APIUrl}{currentUser.Image}" : ""),
                  };
 
+        await _userManager.AddClaimsAsync(currentUser, claims);
+
         var roles = await _userManager.GetRolesAsync(currentUser);
         if (roles is null)
             throw new NotFoundException(string.Format("NoRoles", currentUser.Id));
 
-        return new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-    }
+        return new ClaimsIdentity(claims, "MyCookieAuthenticationScheme");
 
-    private string GenerateRefreshToken()
-    {
-        var randomNumber = new byte[32];
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(randomNumber);
-            return Convert.ToBase64String(randomNumber);
-        }
     }
 
     #endregion

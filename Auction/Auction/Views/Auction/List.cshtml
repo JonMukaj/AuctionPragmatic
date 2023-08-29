@@ -1,41 +1,63 @@
 ﻿@using System.Security.Claims
-@model IEnumerable<Shared.DTO.GetAuctionDTO>
+@*@model IEnumerable<Shared.DTO.GetAuctionDTO>*@
+@model Shared.DTO.GetAuctionListWithUserDTO;
 
-@{
-    var userBalance = ViewContext.HttpContext.User.FindFirstValue("WalletBalance");
+<a href="@Url.Action("Create", "Auction")" class="btn btn-primary">Create Auction</a>
+
+<label style="font-weight:bold;">Your current balance: $@Model.UserDetails.WalletBalance</label>
+@if (!Model.AuctionDetails.Any())
+{
+    <h3>Auction market is empty, please come back later.</h3>
 }
-<button asp-action="Create">Create Auction</button>
+else
+{
 
-<label>@userBalance   empty</label>
+    <table class="table table-sm table-dark">
+        <thead>
+        <tr>
+            <th>
+                Title
+            </th>
+            <th>
+                Seller
+            </th>
+            <th>
+                Top Bid
+            </th>
+            <th>
+                Time Remaining
+            </th>
+            <th>
 
-
-<table class="table table-sm table-dark">
-    <thead>
-    <tr>
-        <th>
-            Title
-        </th>
-        <th>
-            Seller
-        </th>
-        <th>
-            Top Bid
-        </th>
-        <th>
-            Time Remaining
-        </th>
-    </tr>
-    </thead>
-    <tbody>
-        @foreach(var auction in Model)
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var auction in Model.AuctionDetails)
         {
             <tr>
-                <td> @auction.Title</td>
-                <td>  @auction.UserId</td>
-                <td>  @auction.MaxBid</td>
-                <td>  @auction.EndTime</td>
+                <td>
+                    <a href="@Url.Action("Details", "Auction", new { id = @auction.Id })">@auction.Title</a>
+                </td>
+                <td> @auction.Username</td>
+                <td> $@auction.MaxBid</td>
+                <td> @auction.RemainingTime</td>
+                <td>
+                    @{
+                        var userId = int.Parse(ViewContext.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+                        if (auction.UserId.Equals(userId))
+                        {
+                            <form method="post" asp-controller="Auction" asp-action="Delete" asp-route-auctionId="@auction.Id">
+                                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                            </form>
+                        }
+                    }
+                </td>
+
             </tr>
         }
-    </tbody>
+        </tbody>
 
-</table>
+    </table>
+}

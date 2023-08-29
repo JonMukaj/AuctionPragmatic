@@ -23,4 +23,12 @@ public class BidRepository:RepositoryBase<Bid>,IBidRepository
 
     public async Task<IEnumerable<Bid>> GetBidsForAuctionId(int auctionId)=>await FindByCondition(e=>e.AuctionId.Equals(auctionId))
         .OrderByDescending(x=>x.BidAmount).ToListAsync();
+
+    public async Task<Bid> GetMaximumBid(int auctionId) => await FindByCondition(e=>e.AuctionId.Equals(auctionId))
+        .OrderByDescending(b => b.BidAmount)
+        .FirstOrDefaultAsync();
+
+    public async Task<Bid> GetBidForUserIdAndAuctionId(int userId, int auctionId)=>await FindByCondition(e=>e.UserId.Equals(userId) && e.AuctionId.Equals(auctionId)).
+        OrderByDescending(x=>x.BidTime).
+        FirstOrDefaultAsync();
 }

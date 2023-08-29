@@ -62,6 +62,14 @@ public static class ServiceExtensions
             o.Password.RequiredLength = 8;
             o.Password.RequireNonAlphanumeric = false;
         }).AddEntityFrameworkStores<RepositoryContext>().AddDefaultTokenProviders();
+
+
+        services.ConfigureApplicationCookie(options =>
+        {
+            options.LoginPath = "/Authentication/Login";
+            options.LogoutPath = "/Authentication/Logout";
+            options.AccessDeniedPath = "/Authentication/AccessDenied";
+        });
     }
 
     public static void ConfigureResponseCaching(this IServiceCollection services) => services.AddResponseCaching();
@@ -79,30 +87,15 @@ public static class ServiceExtensions
     public static void AddCryptographyUtils(this IServiceCollection services) =>
         services.AddScoped<ICryptoUtils, CryptoUtils>();
 
-
-    public static void AddAuthenticationCookie(this IServiceCollection services) =>
-        services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddCookie(options =>
-            {
-                options.LoginPath = new PathString("/Authentication/Login");
-                options.AccessDeniedPath = new PathString("/Authentication/Login");
-                options.LogoutPath = new PathString("/Authentication/Logout");
-                options.SlidingExpiration = true;
-                options.Cookie.Path = "/";
-            });
-
-    //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    //    .AddCookie(options =>
-    //    {
-    //        options.LoginPath = new PathString("/../Views/Authentication/Login");
-    //        options.ExpireTimeSpan = TimeSpan.FromHours(2);
-    //    });
-
-
     public static void ConfigureSignalR(this IServiceCollection services) =>
         services.AddSignalR().AddJsonProtocol(options =>
         {
             options.PayloadSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
         });
 
+    public static void ConfigureSession(this IServiceCollection services)
+    {
+        services.AddSession();
+        services.AddMvc().AddSessionStateTempDataProvider();
+    }
 }
