@@ -1,5 +1,39 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model Shared.DTO.GetUserDTO
+
+<head>
+    @{
+        Layout = "_Layout";
+    }
+    
+    <link rel="stylesheet" href="~/css/userEdit.css">
+</head>
+
+<title>User Profile</title>
+<h4>Account Details:</h4>
+<img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/Windows_10_Default_Profile_Picture.svg" class="rounded-circle shadow-4"
+     style="width: 150px;" alt="Avatar" />
+
+<div class="edit-form-container">
+    <div class="profile-container">
+        <p><strong>First Name:</strong> @Model.FirstName</p>
+        <p><strong>Last Name:</strong> @Model.LastName</p>
+        <p><strong>Username:</strong> @Model.Username</p>
+        <button id="editButton">Edit Profile</button>
+    </div>
+
+    <div class="edit-form" id="editForm">
+        <h4>Edit Profile</h4>
+        <form method="post" enctype="multipart/form-data" asp-controller="User" asp-action="Update">
+            <input type="text" name="FirstName" placeholder="New First Name" value="@Model.FirstName" />
+            <input type="text" name="LastName" placeholder="New Last Name" value="@Model.LastName" />
+            <input type="text" name="Username" placeholder="sername" value="@Model.Username" readonly />
+            <button type="submit">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById("editButton").addEventListener("click", function () {
+        document.getElementById("editForm").style.display = "block";
+    });
+</script>

@@ -31,7 +31,7 @@ namespace Auction.Controllers
                 TempData["PropertyKey"] = ex.PropertyKey;
             }
 
-            return RedirectToAction("Details","Auction",new {request.AuctionId});
+            return RedirectToAction("Details","Auction",new {id=request.AuctionId});
         }
     }
 }

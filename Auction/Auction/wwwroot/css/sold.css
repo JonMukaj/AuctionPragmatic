@@ -1,0 +1,17 @@
+﻿.overlay {
+    position: absolute;
+    top: 120px;
+    left: 200px;
+    height: 50%;
+    width: 50%;
+    background-image: url('sold.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    opacity: 0.8;
+    z-index: 10;
+}
+
+.container {
+    opacity: 0.5;
+    z-index: 5;
+}

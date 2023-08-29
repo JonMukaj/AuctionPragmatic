@@ -58,10 +58,10 @@ namespace Auction.Controllers
             return RedirectToAction("List");
         }
 
-        [HttpGet("{auctionId}")]
-        public async Task<IActionResult> Details(int auctionId)
+        
+        public async Task<IActionResult> Details(int id)
         {
-            var auction = await _serviceManger.AuctionService.GetAuctionById(auctionId);
+            var auction = await _serviceManger.AuctionService.GetAuctionById(id);
            
             if (TempData["ErrorMessage"] != null && TempData["PropertyKey"] != null)
             {
@@ -72,8 +72,6 @@ namespace Auction.Controllers
             }
             return View(auction);
         }
-
-
 
         [HttpPost("delete/{auctionId}")]
         public async Task<IActionResult> Delete(int auctionId)

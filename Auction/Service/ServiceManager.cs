@@ -22,7 +22,6 @@ public class ServiceManager : IServiceManager
     , UserManager<ApplicationUser> userManager
     , SignInManager<ApplicationUser> signInManager
     , ICryptoUtils cryptoUtils
-    , IHubContext<SignalHub> hub
     , HttpClient httpClient
 
      )

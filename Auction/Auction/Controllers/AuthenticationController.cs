@@ -59,7 +59,6 @@ public class AuthenticationController : Controller
         }
         catch (DefaultException ex)
         {
-            //  ModelState.AddModelError("LoginUser.Username", ex.Message);
             ModelState.AddModelError(ex.PropertyKey, ex.Message);
             return View("Login",request);
         }
